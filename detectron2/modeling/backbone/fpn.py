@@ -154,7 +154,7 @@ class FPN(Backbone):
             results.extend(self.top_block(top_block_in_feature))
         assert len(self._out_features) == len(results)
         logging.info(f"need to add noise here: {os.environ['ADDNOISE']}")
-        if os.environ["ADDNOISE"] == "True":
+        if os.environ.get("ADDNOISE") == "True":
             noise = ((1.2 - 0.8) * torch.rand(1) + 0.8).cuda()
             return {f: res*noise for f, res in zip(self._out_features, results)}
         return {f: res for f, res in zip(self._out_features, results)}
