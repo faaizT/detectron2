@@ -12,6 +12,7 @@ from torch.nn.parallel import DataParallel, DistributedDataParallel
 import detectron2.utils.comm as comm
 from detectron2.utils.events import EventStorage, get_event_storage
 from detectron2.utils.logger import _log_api_usage
+import wandb
 
 __all__ = ["HookBase", "TrainerBase", "SimpleTrainer", "AMPTrainer"]
 
@@ -339,6 +340,8 @@ class SimpleTrainer(TrainerBase):
                     f"Loss became infinite or NaN at iteration={storage.iter}!\n"
                     f"loss_dict = {metrics_dict}"
                 )
+
+            wandb.log(metrics_dict)
 
             storage.put_scalar("{}total_loss".format(prefix), total_losses_reduced)
             if len(metrics_dict) > 1:
