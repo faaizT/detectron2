@@ -10,6 +10,8 @@ from detectron2.layers import Conv2d, ShapeSpec, get_norm
 from .backbone import Backbone
 from .build import BACKBONE_REGISTRY
 from .resnet import build_resnet_backbone
+import os
+import logging
 
 __all__ = ["build_resnet_fpn_backbone", "build_retinanet_resnet_fpn_backbone", "FPN"]
 
@@ -151,6 +153,10 @@ class FPN(Backbone):
                 top_block_in_feature = results[self._out_features.index(self.top_block.in_feature)]
             results.extend(self.top_block(top_block_in_feature))
         assert len(self._out_features) == len(results)
+        logging.info(f"need to add noise here: {os.environ['ADDNOISE']}")
+        if os.environ["ADDNOISE"] == "True":
+            noise = ((1.2 - 0.8) * torch.rand(1) + 0.8).cuda()
+            return {f: res*noise for f, res in zip(self._out_features, results)}
         return {f: res for f, res in zip(self._out_features, results)}
 
     def output_shape(self):
